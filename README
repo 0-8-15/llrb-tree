@@ -1,0 +1,287 @@
+[[tag: eggs]]
+== llrb-tree
+
+Left–leaning red–black trees.  A general version and some customized
+to the key types "fixnum", "string" and "symbol" are provided.
+
+== Overview
+
+A left-leaning red–black (LLRB) tree is a type of self-balancing binary search tree.
+It is a variant of the red–black tree and guarantees the same asymptotic complexity for operations.
+
+This egg implements an API to LLRB-trees (mostly) compatible to srfi-69 Hashtables
+plus some procedures resembling the API of assoc-Lists.
+
+Note that this egg is mainly intended to used to replace assoc-Lists.
+
+== API
+
+<procedure>(make-llrb-treetype COMPARATOR)</procedure>
+
+Define a treetype of keys matching COMPARATOR (from SRFI-128).
+
+<procedure>(make-llrb-treetype KEY? EQUAL LESS)</procedure>
+
+Define a treetype of keys matching the KEY? predicate using EQUAL as
+equivalence predicate and LESS as ordering predicate.
+
+Note: the search key is passed to EQUAL and LESS as the first
+parameter, the key of the element of the tree as second parameter.
+
+<procedure>(llrb-treetype? X)</procedure>
+
+Test X to be an llrb-treetype.
+
+The procedures "*{{binding-set}}*" have ananologous definitions
+specialized to the key type.  Those specialized procedure names are
+prefixed by the key type (i.e. {{fixnum-}}, {{string-}} and
+{{symbol-}}).
+
+Procedures prefixed with {{symbol-}}, {{fixnum-}}, {{string-}} are
+defined for most of the following.  Those are specialized to the
+respective key type.
+
+<procedure>(string-empty-binding-set)</procedure>
+<procedure>(fixnum-empty-binding-set)</procedure>
+<procedure>(symbol-empty-binding-set)</procedure>
+<procedure>(empty-binding-set type)</procedure>
+
+Return an empty binding set.
+
+<procedure>(make-binding-set TYPE . pairs)</procedure>
+
+Undocumented (API pending review).
+
+Create an empty set of bindings of TYPE populate it with bindings from
+`pairs`.
+
+
+<procedure>(binding-set-empty? set)</procedure>
+
+Test whether or not the set has no associations.
+
+<procedure>(binding-set-ref/default set key default)</procedure>
+
+Returns the value bound to {{key}} in {{set}} or {{default}} value if
+not found.
+
+<procedure>(binding-set-ref set key [failure] [success])</procedure>
+
+Extracts the value associated to key in "binding-set", invokes the
+procedure {{success}} on it, and returns its result; if {{success}} is
+not provided, then the value itself is returned. If key is not
+contained in {{set}} and {{failure}} is supplied, then {{failure}} is
+invoked on no arguments and its result is returned. Otherwise, it is
+an error.
+
+<procedure>(binding-set-insert set key value)</procedure>
+
+Extend {{set}} with a binding {{key}}-{{value}}, return the extended
+set.
+
+<procedure>(binding-set-delete key set)</procedure>
+
+Deletes association from {{set}} with given {{key}}, return the new set.
+
+<procedure>(binding-set-update set key update default)</procedure>
+
+Return a set with the binding of {{key}} replaced. {{update}} and
+{{default}} are procedures with the same semantics and in hash-table-update!.
+
+<procedure>(binding-set-cons key value set)</procedure>
+
+Same as {{binding-set-insert}} with API as alist-cons (srfi-1).
+
+<procedure>(binding-set-fold proc nil set)</procedure>
+
+{{Proc}} must be a procedure of three arguments.  It is invoked for
+each element with the key, value and the accumulated value (nil for
+the first element).
+
+<procedure>(binding-set-union inner outer)</procedure>
+
+Return a merged set.  All bindings in {{inner}} shadow those in
+{{outer}}.
+
+
+
+<procedure>(make-table type)</procedure>
+
+Create a table with an empty set of bindings according to {{type}}.
+
+<procedure>(string-make-table)</procedure>
+<procedure>(fixnum-make-table)</procedure>
+<procedure>(symbol-make-table)</procedure>
+
+Create a table with an empty set of bindings.  Specialized to the key
+type.
+
+<procedure>(table? x)</procedure>
+
+Test whether or not the object is a LLRB-table.
+
+<procedure>(table-empty? table)</procedure>
+
+Test {{table}} to have no bidings.
+
+<procedure>(table-copy table)</procedure>
+
+Create a copy of {{table}} initially sharing all bindings.
+
+<procedure>(table-delete! table key)</procedure>
+
+Delete the binding for {{key}} from the bindings in the table.
+
+<procedure>(table-set! table key value)</procedure>
+
+Set the {{value}} for {{key}} in {{table}}.
+
+<procedure>(table-ref/default table key default)</procedure>
+
+Returns the value associated to key in {{table}}, or the {{default}}
+when the {{key}} is missing.
+
+<procedure>(table-ref table key [failure] [success])</procedure>
+
+Extracts the value associated to key in {{table}}, invokes the
+procedure {{success}} on it, and returns its result; if {{success}} is
+not provided, then the value itself is returned. If key is not
+contained in {{set}} and {{failure}} is supplied, then {{failure}} is
+invoked on no arguments and its result is returned. Otherwise, it is
+an error.
+
+<procedure>(table-update! table key update . default)</procedure>
+
+Note: procedures {{update}} and {{default}} should have no side
+effects.  They may be called multiple times.  (This can happen if
+those procedures allow other continuations/threads to update the table
+before they return.  As a consequence those procedures must especially
+not update the table, since this will result in an endless loop.)
+
+<procedure>(table-fold table proc nil)</procedure>
+<procedure>(table-for-each table proc)</procedure>
+
+Intentionally minimum related operations are NOT available for
+{{symbol}}, since those are supposedly unordered.
+
+<procedure>(table-min table thunk)</procedure>
+
+Return two values the minimal key and associated value in table.
+If the table is empty {{thunk}} is invoked instead.
+
+((FIXME: will be in constant time with little change to the
+source, at the moment O(log n).))
+
+<procedure>(table-delete-min! table)</procedure>
+
+Delete the entry with the smalles key and return two values, the key
+and associated value in table.  In case table is empty returns two
+false values.
+
+=== Auxillaries
+
+Note: These procedures are obsolete for chicken version >= 4.10.1 at
+least (they provide no more performance benefit) and will be removed
+in future versions of this egg.
+
+<procedure>(wrap-one-string-arg PROC)</procedure>
+
+Returns a procedure caching PROC.  PROC must accept exactly one
+argument, a string.
+
+<procedure>(str2sym string)</procedure>
+
+Calls {{string->symbol}} and caches the result.  (Surprisingly this is
+faster on lookup than {{string->symbol}} itself, at least for large
+numbers.)
+
+== Examples
+
+    #;1> (use llrb-tree)
+    #;2> (define y (fixnum-make-table))
+    #;3> (fixnum-table-update! y 23 add1 (lambda () 41))
+    42
+    #;4> (define numttype (make-llrb-treetype number? = <))
+    #;5> (define nt (make-table numttype))
+    #;6> (table-update! nt 42.23 add1 (lambda () 22))
+    23
+    #;7> (define clsttype (make-llrb-treetype
+          number?
+	  (lambda (a b) (let ((delta (- a b))) (and (< delta 1) (> delta 0))))
+	  <))
+    #;8> (define ct (make-table clsttype))
+    #;9> (table-set! ct 1 '(one))
+    #;10> (table-set! ct 2 '(two))
+    #;11> (table-set! ct 3 '(three))
+    #;12> (define (classify n) (table-update! ct n (lambda (v) `(,(car v) ,n . ,(cdr v)))))
+    #;13> (classify 1.1)
+    (one 1.1)
+    #;14>  (classify 1.2)
+    (one 1.2 1.1)
+    #;15> (classify 2.1)
+    (two 2.1)
+    #;16> (classify 2.4)
+    (two 2.4 2.1)
+    #;17> (classify 3.5)
+    (three 3.5)
+    #;18> (table-fold ct (lambda (k v i) `((,k . ,v) . ,i)) '())
+    ((1 one 1.2 1.1) (2 two 2.4 2.1) (3 three 3.5))
+    #;19> (define (string-binding-set-find set proc) ;; This is not the most efficient implementation.
+      (call-with-current-continuation
+       (lambda (return)
+	 (or
+	  (string-binding-set-fold
+	   (lambda (k v i)
+	     (let ((hit (proc k v)))
+	       (if hit (return hit) i)))
+	   #f
+	   set)
+	  (error "no match")))))
+    #;20> (string-binding-set-find (string-binding-set-cons "a" 'A (string-empty-binding-set)) (lambda (k v) (equal? k "a")))
+    #t
+
+== About this egg
+
+=== Author
+
+Jörg F. Wittenberger
+
+=== Version History
+
+0.3.1 -- Enable srfi-128 comparators, add tests, documentation update.
+
+0.3 -- Fixed dependency.
+
+0.2 -- Changed API to match srfi-125
+
+0.1 -- initial release
+
+=== License
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+
+Neither the name of the author nor the names of its contributors may
+be used to endorse or promote products derived from this software
+without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGE.

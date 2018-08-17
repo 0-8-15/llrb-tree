@@ -1,0 +1,8 @@
+;; -*- mode: Scheme; -*-
+((category data)
+ (license "BSD")
+ (author "Jörg F. Wittenberger")
+ (synopsis "LLRB tree general and customized to key types.")
+ ;;(doc-from-wiki)
+ (needs llrb-syntax comparators)
+ (files #;"llrbsyn.scm" "llrb-tree.scm" "llrb-tree.setup" "llrb-tree.meta"))

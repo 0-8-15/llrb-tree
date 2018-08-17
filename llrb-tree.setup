@@ -1,0 +1,24 @@
+;; -*-Scheme-*-
+
+(compile
+ -s -O3 -d2 -J
+ -clustering -no-trace -no-lambda-info
+ "llrb-tree.scm")
+(compile
+ -c -O3
+ -clustering -no-trace -no-lambda-info
+ -emit-type-file "llrb-tree.types"
+ "llrb-tree.scm" -unit llrb-tree)
+(compile -s -O2 -d0 "llrb-fixnum-table.import.scm")
+(compile -s -O2 -d0 "llrb-m-fixnum-table.import.scm")
+(compile -s -O2 -d0 "llrb-string-table.import.scm")
+(compile -s -O2 -d0 "llrb-symbol-tree.import.scm")
+(compile -s -O2 -d0 "llrb-generic-tree.import.scm")
+(compile -s -O2 -d0 "llrb-tree.import.scm")
+
+(install-extension
+ 'llrb-tree
+ '("llrb-tree.types"
+   "llrb-tree.so" "llrb-fixnum-table.import.so" "llrb-m-fixnum-table.import.so" "llrb-string-table.import.so"
+   "llrb-symbol-tree.import.so" "llrb-generic-tree.import.so" "llrb-tree.import.so")
+ '((version "0.3.1.2")))
