@@ -11,4 +11,5 @@
   (extension
    llrb-tree
    (types-file)
-   (csc-options "-O3" "-lfa2" "-d2" "-clustering" "-no-trace" "-no-lambda-info"))))
+   (csc-options "-O3" "-lfa2" "-d2" "-clustering" "-no-trace" "-no-lambda-info")
+   (modules llrb-tree llrb-symbol-tree llrb-string-table llrb-fixnum-table))))
