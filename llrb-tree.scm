@@ -10,7 +10,7 @@
  (specialize)
  (foreign-declare
  #<<EOF
-C_inline void C_ccall C_make_structureX(C_word c, C_word *av)
+void C_ccall C_make_structureX(C_word c, C_word *av)
 {
   C_word av2[2], *v=av+1;
   av2[0] = av[1];
@@ -23,8 +23,6 @@ EOF
 )
 
  )
-
-(require-library comparators)
 
 (module
  llrb-string-table
@@ -58,9 +56,15 @@ EOF
   wrap-one-string-arg
   str2sym ;; caches string->symbol
   )
- (import scheme chicken foreign)
- (import (only data-structures identity))
- (import (only lolevel mutate-procedure!))
+ (import
+  scheme
+  (chicken base)
+  (chicken type)
+  (chicken foreign)
+  (chicken fixnum)
+  (only miscmacros ensure))
+ ;; (import (only data-structures identity))
+ ;; (import (only lolevel mutate-procedure!))
  (import llrb-syntax)
  ;;(include "llrbsyn.scm")
 
@@ -74,11 +78,17 @@ EOF
   (unsafe
    (define-syntax typecheck
      (syntax-rules ()
-       ((_ obj typetag loc) (begin)))))
+       ((_ obj typetag loc) (begin))))
+   (define-syntax typecheckp
+     (syntax-rules ()
+       ((_ obj typepred loc) (begin)))))
   (else
    (define-syntax typecheck
      (syntax-rules ()
-       ((_ obj typetag loc) (##sys#check-structure obj typetag loc))))))
+       ((_ obj typetag loc) (##sys#check-structure obj typetag loc))))
+   (define-syntax typecheckp
+     (syntax-rules ()
+       ((_ obj typepred loc) (typepred obj))))))
 
  (define-syntax checkbinding-node
    (syntax-rules ()
@@ -286,7 +296,7 @@ EOF
 
  (define-syntax check-table
    (syntax-rules ()
-     ((_ obj loc) (typecheck obj '<llrb-string-table> loc))))
+     ((_ obj loc) (typecheckp obj table? loc))))
 
  (define (make-table)
    (%make-string-table (empty-binding-set)))
@@ -429,8 +439,12 @@ EOF
   table-update!
   table-min table-delete-min!
   )
- (import scheme chicken foreign)
- (import (only data-structures identity))
+ (import
+  scheme
+  (chicken base)
+  (chicken type)
+  (chicken fixnum)
+  (only miscmacros ensure))
  (import llrb-syntax)
  ;;(include "llrbsyn.scm")
 
@@ -444,11 +458,17 @@ EOF
   (unsafe
    (define-syntax typecheck
      (syntax-rules ()
-       ((_ obj typetag loc) (begin)))))
+       ((_ obj typetag loc) (begin))))
+   (define-syntax typecheckp
+     (syntax-rules ()
+       ((_ obj typepred loc) (begin)))))
   (else
    (define-syntax typecheck
      (syntax-rules ()
-       ((_ obj typetag loc) (##sys#check-structure obj typetag loc))))))
+       ((_ obj typetag loc) (##sys#check-structure obj typetag loc))))
+   (define-syntax typecheckp
+     (syntax-rules ()
+       ((_ obj typepred loc) (typepred obj))))))
 
  (define-syntax checkbinding-node
    (syntax-rules ()
@@ -482,7 +502,7 @@ EOF
 
  (define-syntax check-table
    (syntax-rules ()
-     ((_ obj loc) (typecheck obj '<llrb-fixnum-table> loc))))
+     ((_ obj loc) (typecheckp obj table? loc))))
 
  (define-syntax binding-node-update
    (syntax-rules (left: right: color:)
@@ -668,8 +688,12 @@ EOF
   table-ref
   table-update!
   )
- (import scheme chicken foreign)
- (import (only data-structures identity))
+ (import
+  scheme
+  (chicken base)
+  (chicken type)
+  (chicken fixnum)
+  (only miscmacros ensure))
  (import llrb-syntax)
  ;;(include "llrbsyn.scm")
 
@@ -683,11 +707,17 @@ EOF
   (unsafe
    (define-syntax typecheck
      (syntax-rules ()
-       ((_ obj typetag loc) (begin)))))
+       ((_ obj typetag loc) (begin))))
+   (define-syntax typecheckp
+     (syntax-rules ()
+       ((_ obj typepred loc) (begin)))))
   (else
    (define-syntax typecheck
      (syntax-rules ()
-       ((_ obj typetag loc) (##sys#check-structure obj typetag loc))))))
+       ((_ obj typetag loc) (##sys#check-structure obj typetag loc))))
+   (define-syntax typecheckp
+     (syntax-rules ()
+       ((_ obj typepred loc) (typepred obj))))))
 
  (define-syntax checkbinding-node
    (syntax-rules ()
@@ -895,7 +925,7 @@ EOF
 
  (define-syntax check-table
    (syntax-rules ()
-     ((_ obj loc) (typecheck obj '<llrb-symbol-table> loc))))
+     ((_ obj loc) (typecheckp obj table loc))))
 
  (: make-table ( --> :table:))
  (define (make-table)
@@ -998,11 +1028,16 @@ EOF
   table-min
   table-delete-min!
   )
- (import scheme chicken foreign)
- (import (only data-structures identity))
+ (import
+  scheme
+  (chicken base)
+  (chicken foreign)
+  (chicken type)
+  (chicken fixnum))
+ (import (only miscmacros ensure))
  (import llrb-syntax)
  ;;(include "llrbsyn.scm")
- (import comparators)
+ (import srfi-128)
 
  (cond-expand
   (own-struct
@@ -1015,12 +1050,18 @@ EOF
    (define-syntax typecheck
      (syntax-rules ()
        ((_ obj typetag loc) (begin))))
+   (define-syntax typecheckp
+     (syntax-rules ()
+       ((_ obj typepred loc) (begin))))
    (define-inline (check-keytype type k) #t)
    )
   (else
    (define-syntax typecheck
      (syntax-rules ()
        ((_ obj typetag loc) (##sys#check-structure obj typetag loc))))
+   (define-syntax typecheckp
+     (syntax-rules ()
+       ((_ obj typepred loc) (typepred obj))))
    (define-inline (check-keytype type k)
      (and-let*
       ((p (llrb-tree-type-key-type? type)))
@@ -1301,7 +1342,7 @@ EOF
 
  (define-syntax check-table
    (syntax-rules ()
-     ((_ obj loc) (typecheck obj '<llrb-generic-table> loc))))
+     ((_ obj loc) (typecheckp obj table? loc))))
 
  (: make-table (:table-type: --> :table:))
  (define (make-table type)
@@ -1411,13 +1452,14 @@ EOF
 
 ;; This mutating version will go away.  It is left here for now to
 ;; show how bad a difference the mutations are.
-(include "fixnum-table-mutating.scm")
+;; (include "fixnum-table-mutating.scm")
 
 (module
  llrb-tree
  *
- (import scheme chicken)
- (import (prefix llrb-m-fixnum-table mu:))
+ (import scheme)
+ (import (chicken module))
+ ;; (import (prefix llrb-m-fixnum-table mu:))
  ;; This is a bit unfortune as it doubles several prefixes.
  ;;
  ;; At the other hand removing those in the source makes it harder to
