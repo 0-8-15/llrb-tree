@@ -56,13 +56,17 @@ EOF
   wrap-one-string-arg
   str2sym ;; caches string->symbol
   )
- (import
-  scheme
-  (chicken base)
-  (chicken type)
-  (chicken foreign)
-  (chicken fixnum)
-  (only miscmacros ensure))
+ (import scheme)
+ (cond-expand
+  (chicken-4
+   (import chicken (only data-structures identity)))
+  (else
+   (import
+    (chicken base)
+    (chicken type)
+    (chicken foreign)
+    (chicken fixnum)
+    (only miscmacros ensure))))
  ;; (import (only data-structures identity))
  ;; (import (only lolevel mutate-procedure!))
  (import llrb-syntax)
@@ -439,12 +443,17 @@ EOF
   table-update!
   table-min table-delete-min!
   )
- (import
-  scheme
-  (chicken base)
-  (chicken type)
-  (chicken fixnum)
-  (only miscmacros ensure))
+ (import scheme)
+ (cond-expand
+  (chicken-4
+   (import chicken (only data-structures identity)))
+  (else
+   (import
+    (chicken base)
+    (chicken type)
+    (chicken foreign)
+    (chicken fixnum)
+    (only miscmacros ensure))))
  (import llrb-syntax)
  ;;(include "llrbsyn.scm")
 
@@ -688,12 +697,16 @@ EOF
   table-ref
   table-update!
   )
- (import
-  scheme
-  (chicken base)
-  (chicken type)
-  (chicken fixnum)
-  (only miscmacros ensure))
+ (import scheme)
+ (cond-expand
+  (chicken-4
+   (import chicken (only data-structures identity)))
+  (else
+   (import
+    (chicken base)
+    (chicken type)
+    (chicken fixnum)
+    (only miscmacros ensure))))
  (import llrb-syntax)
  ;;(include "llrbsyn.scm")
 
@@ -925,7 +938,7 @@ EOF
 
  (define-syntax check-table
    (syntax-rules ()
-     ((_ obj loc) (typecheckp obj table loc))))
+     ((_ obj loc) (typecheckp obj table? loc))))
 
  (: make-table ( --> :table:))
  (define (make-table)
@@ -1028,16 +1041,22 @@ EOF
   table-min
   table-delete-min!
   )
- (import
-  scheme
-  (chicken base)
-  (chicken foreign)
-  (chicken type)
-  (chicken fixnum))
- (import (only miscmacros ensure))
+ (import scheme)
+ (cond-expand
+  (chicken-4
+   (import chicken (only data-structures identity)))
+  (else
+   (import
+    (chicken base)
+    (chicken type)
+    (chicken foreign)
+    (chicken fixnum)
+    (only miscmacros ensure))))
  (import llrb-syntax)
  ;;(include "llrbsyn.scm")
- (import srfi-128)
+ (cond-expand
+  (chicken-5 (import srfi-128))
+  (else (import comparators)))
 
  (cond-expand
   (own-struct
@@ -1458,7 +1477,9 @@ EOF
  llrb-tree
  *
  (import scheme)
- (import (chicken module))
+ (cond-expand
+  (chicken-4 (import chicken))
+  (else (import (chicken module))))
  ;; (import (prefix llrb-m-fixnum-table mu:))
  ;; This is a bit unfortune as it doubles several prefixes.
  ;;
