@@ -1,14 +1,35 @@
 ;; -*-Scheme-*-
 
-(compile
- -s -O3 -d2 -J
- -clustering -no-trace -no-lambda-info
- "llrb-tree.scm")
-(compile
- -c -O3
- -clustering -no-trace -no-lambda-info
+(define opt-flags '(-O3 -clustering -no-trace -no-lambda-info))
+
+(define so-flags '(-s -O3 -d2 -J))
+(define o-flags '(-c))
+
+(compile ,@so-flags ,@opt-flags "llrb-string-table.scm")
+(compile ,@o-flags ,@opt-flags
+ -emit-type-file "llrb-string-table.types"
+ "llrb-string-table.scm" -unit llrb-string-table)
+
+(compile ,@so-flags ,@opt-flags "llrb-fixnum-table.scm")
+(compile ,@o-flags ,@opt-flags
+ -emit-type-file "llrb-fixnum-table.types"
+ "llrb-fixnum-table.scm" -unit llrb-fixnum-table)
+
+(compile ,@so-flags ,@opt-flags "llrb-symbol-tree.scm")
+(compile ,@o-flags ,@opt-flags
+ -emit-type-file "llrb-symbol-tree.types"
+ "llrb-symbol-tree.scm" -unit llrb-symbol-tree)
+
+(compile ,@so-flags ,@opt-flags "llrb-generic-tree.scm")
+(compile ,@o-flags ,@opt-flags
+ -emit-type-file "llrb-generic-tree.types"
+ "llrb-generic-tree.scm" -unit llrb-generic-tree)
+
+(compile ,@so-flags ,@opt-flags "llrb-tree.scm")
+(compile ,@o-flags ,@opt-flags
  -emit-type-file "llrb-tree.types"
  "llrb-tree.scm" -unit llrb-tree)
+
 (compile -s -O2 -d0 "llrb-fixnum-table.import.scm")
 (compile -s -O2 -d0 "llrb-string-table.import.scm")
 (compile -s -O2 -d0 "llrb-symbol-tree.import.scm")
@@ -20,4 +41,4 @@
  '("llrb-tree.types"
    "llrb-tree.so" "llrb-fixnum-table.import.so" "llrb-string-table.import.so"
    "llrb-symbol-tree.import.so" "llrb-generic-tree.import.so" "llrb-tree.import.so")
- '((version "0.3.2")))
+ '((version "0.3.3")))

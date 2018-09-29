@@ -3,13 +3,36 @@
  (category data)
  (license "BSD")
  (author "Jörg F. Wittenberger")
- (version "0.3.2")
+ (version "0.3.3")
  ;;(doc-from-wiki)
  (build-dependencies llrb-syntax)
  (dependencies srfi-128 miscmacros)
+ (distribution-files
+  "llrb-tree.egg"
+  "llrb-tree.setup" "llrb-tree.meta"
+  "common.scm" "llrb-symbol-tree.scm" "llrb-string-table.scm" "llrb-fixnum-table.scm" "llrb-generic-tree.scm"
+  "llrb-tree.scm"
+  "fixnum-table-mutating.scm"
+  )
  (components
+  (extension
+   llrb-generic-tree
+   (types-file)
+   (csc-options "-O3" "-lfa2" "-d2" "-clustering" "-no-trace" "-no-lambda-info"))
+  (extension
+   llrb-symbol-tree
+   (types-file)
+   (csc-options "-O3" "-lfa2" "-d2" "-clustering" "-no-trace" "-no-lambda-info"))
+  (extension
+   llrb-fixnum-table
+   (types-file)
+   (csc-options "-O3" "-lfa2" "-d2" "-clustering" "-no-trace" "-no-lambda-info"))
+  (extension
+   llrb-string-table
+   (types-file)
+   (csc-options "-O3" "-lfa2" "-d2" "-clustering" "-no-trace" "-no-lambda-info"))
   (extension
    llrb-tree
    (types-file)
    (csc-options "-O3" "-lfa2" "-d2" "-clustering" "-no-trace" "-no-lambda-info")
-   (modules llrb-tree llrb-symbol-tree llrb-string-table llrb-fixnum-table))))
+   (component-dependencies llrb-generic-tree llrb-symbol-tree llrb-fixnum-table llrb-string-table))))
