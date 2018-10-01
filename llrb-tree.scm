@@ -3,9 +3,9 @@
  *
  (import scheme)
  (cond-expand
-  (chicken-4 (import chicken)
-	     (require-library llrb-generic-tree llrb-symbol-tree llrb-fixnum-table llrb-string-table))
-  (else (import (chicken module))))
+  (chicken-4 (import chicken))
+  (else (import (chicken module) (chicken base))))
+ (require-library llrb-generic-tree llrb-symbol-tree llrb-fixnum-table llrb-string-table)
  ;; (import (prefix llrb-m-fixnum-table mu:))
  ;; This is a bit unfortune as it doubles several prefixes.
  ;;

@@ -41,4 +41,4 @@
  '("llrb-tree.types"
    "llrb-tree.so" "llrb-fixnum-table.import.so" "llrb-string-table.import.so"
    "llrb-symbol-tree.import.so" "llrb-generic-tree.import.so" "llrb-tree.import.so")
- '((version "0.3.3")))
+ '((version "0.3.4")))
