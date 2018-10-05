@@ -37,8 +37,27 @@
 (compile -s -O2 -d0 "llrb-tree.import.scm")
 
 (install-extension
+ 'llrb-fixnum-table
+ '("llrb-fixnum-table.types"
+   "llrb-fixnum-table.so" "llrb-fixnum-table.import.so")
+ '((version "0.3.5")))
+(install-extension
+ 'llrb-string-table
+ '("llrb-string-table.types"
+   "llrb-string-table.so" "llrb-string-table.import.so")
+ '((version "0.3.5")))
+(install-extension
+ 'llrb-symbol-tree
+ '("llrb-symbol-tree.types"
+   "llrb-symbol-tree.so" "llrb-symbol-tree.import.so")
+ '((version "0.3.5")))
+(install-extension
+ 'llrb-generic-tree
+ '("llrb-generic-tree.types"
+   "llrb-generic-tree.so" "llrb-generic-tree.import.so")
+ '((version "0.3.5")))
+(install-extension
  'llrb-tree
  '("llrb-tree.types"
-   "llrb-tree.so" "llrb-fixnum-table.import.so" "llrb-string-table.import.so"
-   "llrb-symbol-tree.import.so" "llrb-generic-tree.import.so" "llrb-tree.import.so")
- '((version "0.3.4")))
+   "llrb-tree.so" "llrb-tree.import.so")
+ '((version "0.3.5")))

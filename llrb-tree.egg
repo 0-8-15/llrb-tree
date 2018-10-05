@@ -3,7 +3,7 @@
  (category data)
  (license "BSD")
  (author "Jörg F. Wittenberger")
- (version "0.3.4")
+ (version "0.3.5")
  ;;(doc-from-wiki)
  (build-dependencies llrb-syntax)
  (dependencies srfi-128 miscmacros)
