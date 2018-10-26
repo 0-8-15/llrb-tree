@@ -48,7 +48,7 @@
  ;;(include "llrbsyn.scm")
  (cond-expand
   (chicken-5 (import srfi-128))
-  (else (import comparators)))
+  (else (use comparators)))
 
  (cond-expand
   (own-struct
