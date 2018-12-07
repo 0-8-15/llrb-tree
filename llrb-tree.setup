@@ -60,4 +60,4 @@
  'llrb-tree
  '("llrb-tree.types"
    "llrb-tree.so" "llrb-tree.import.so")
- '((version "0.3.6")))
+ '((version "0.3.7")))

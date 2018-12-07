@@ -10,6 +10,7 @@
  (specialize)
  (foreign-declare
  #<<EOF
+static
 void C_ccall C_make_structureX(C_word c, C_word *av)
 {
   C_word av2[2], *v=av+1;
