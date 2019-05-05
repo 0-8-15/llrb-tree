@@ -125,7 +125,7 @@
       (binding-set-update-node
        1 n (binding-node-left n) (binding-node-right n) (binding-node-color n) more))))
 
- (define-type :table-type: (struct llrb-tree-type))
+ (define-type |:table-type:| (struct llrb-tree-type))
  (define-record llrb-tree-type
    key-type?
    lookup
@@ -142,7 +142,7 @@
  (define binding-node-init! #f)
  (define binding-node-empty? #f)
 
- (: make-llrb-treetype* ((or (procedure (*) boolean) false) (procedure (* *) boolean) (procedure (* *) *) --> :table-type:))
+ (: make-llrb-treetype* ((or (procedure (*) boolean) false) (procedure (* *) boolean) (procedure (* *) *) --> |:table-type:|))
  (define (make-llrb-treetype* key-type? equal less)
 
    (define-syntax generic-k-n-eq?
@@ -195,12 +195,12 @@
     binding-node-delete-min
     ))
 
- (define-type :mk-tt-1: (--> :table-type:))
- (define-type :mk-tt-2: ((struct comparator) --> :table-type:))
- (define-type :mk-tt-3:
+ (define-type |:mk-tt-1:| (--> |:table-type:|))
+ (define-type |:mk-tt-2:| ((struct comparator) --> |:table-type:|))
+ (define-type |:mk-tt-3:|
    ((or (procedure (*) boolean) false) (procedure (* *) boolean) (procedure (* *) *)
-    --> :table-type:))
- (: make-llrb-treetype (or :mk-tt-1: :mk-tt-2: :mk-tt-3:))
+    --> |:table-type:|))
+ (: make-llrb-treetype (or |:mk-tt-1:| |:mk-tt-2:| |:mk-tt-3:|))
  
  (define (make-llrb-treetype . args)
    (cond
@@ -228,7 +228,7 @@
 
  ;; 0Xpairs
 
- (: make-binding-set (:table-type: &rest -> (struct <binding-node>)))
+ (: make-binding-set (|:table-type:| &rest -> (struct <binding-node>)))
  (define (make-binding-set type . lst)	; export
    (if (null? lst)
        (empty-binding-set type)
@@ -335,7 +335,7 @@
        outer inner)
       to)))
 
- (define-type :table: (struct <llrb-generic-table>))
+ (define-type |:table:| (struct <llrb-generic-table>))
  (define-record-type <llrb-generic-table>
    (%make-generic-table type root)
    table?
@@ -355,38 +355,38 @@
    (syntax-rules ()
      ((_ obj loc) (typecheckp obj table? loc))))
 
- (: make-table (:table-type: --> :table:))
+ (: make-table (|:table-type:| --> |:table:|))
  (define (make-table type)
    (ensure llrb-tree-type? type)
    (%make-generic-table type (empty-binding-set type)))
 
- (: table-copy (:table: --> :table:))
+ (: table-copy (|:table:| --> |:table:|))
  (define (table-copy table)
    (check-table table 'generic-table-copy)
    (%make-generic-table (llrb-type table) (root table)))
 
- (: table-empty? (:table: --> boolean))
+ (: table-empty? (|:table:| --> boolean))
  (define (table-empty? table)
    (check-table table 'generic-table-empty?)
    (binding-node-empty? (root table)))
 
- (: table-delete! (:table: * -> *))
+ (: table-delete! (|:table:| * -> *))
  (define (table-delete! table key)
    (check-table table 'generic-table-delete!)
    (retry-alter table r root root-set! ((llrb-tree-type-delete (llrb-type table)) r key)))
 
- (: table-set! (:table: * * -> *))
+ (: table-set! (|:table:| * * -> *))
  (define (table-set! table key value)
    (check-table table 'generic-table-set!)
    (let ((nn (%make-new-binding-node key value)))
      (retry-alter table r root root-set! ((llrb-tree-type-insert (llrb-type table)) r key #f nn #f))))
  
- (: table-ref/default (:table: * * --> *))
+ (: table-ref/default (|:table:| * * --> *))
  (define (table-ref/default table key default)
    (check-table table 'generic-table-ref/default)
    (%binding-set-ref/default (llrb-type table) (root table) key default))
 
- (: table-ref (:table: * &optional (procedure () *) (procedure (*) *) -> *))
+ (: table-ref (|:table:| * &optional (procedure () *) (procedure (*) *) -> *))
  (define (table-ref table key . thunk+success)
    (check-table table 'generic-table-ref)
    (%binding-set-ref/thunk
@@ -396,7 +396,7 @@
 	  (error "generic-table-ref unbound key" key)))
     (and (pair? thunk+success) (pair? (cdr thunk+success)) (cadr thunk+success))))
 
- (: table-update! (:table: * (or false procedure) &rest procedure -> *))
+ (: table-update! (|:table:| * (or false procedure) &rest procedure -> *))
  (define (table-update! table key update . default)
    (check-table table 'generic-table-update!)
    (or (eq? update #f) (ensure procedure? update))
@@ -423,7 +423,7 @@
 	     result)
 	   (loop #f (root table))))))
 
- (: table-fold (:table: (procedure (* * :table:) *) * -> *))
+ (: table-fold (|:table:| (procedure (* * |:table:|) *) * -> *))
  (define (table-fold table proc init)
    (check-table table 'generic-table-fold)
    (ensure procedure? proc)
@@ -431,7 +431,7 @@
     (lambda (node init) (proc (binding-node-key node) (binding-node-value node) init))
     init (root table)))
 
- (: table-for-each (:table: (procedure (* *) *) -> *))
+ (: table-for-each (|:table:| (procedure (* *) *) -> *))
  (define (table-for-each table proc)
    (check-table table 'generic-table-for-each)
    (ensure procedure? proc)
@@ -440,7 +440,7 @@
     (root table))
    #f)
 
- (: table-min (:table: (procedure () * *) --> * *))
+ (: table-min (|:table:| (procedure () * *) --> * *))
  (define (table-min table default)
    (check-table table 'generic-table-min)
    (let ((node ((llrb-tree-type-min (llrb-type table)) (root table))))
@@ -449,7 +449,7 @@
 	   (ensure procedure? default)
 	   (default)))))
 
- (: table-delete-min! (:table: -> * *))
+ (: table-delete-min! (|:table:| -> * *))
  (define (table-delete-min! table)
    ((llrb-tree-type-delete-min (llrb-type table))
     (root table)

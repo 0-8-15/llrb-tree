@@ -256,7 +256,7 @@
    (checkbinding-node outer 'binding-union)
    (%binding-set-fold (lambda (node init) (%binding-set-insert init (%binding-node-name node) #f node #f)) outer inner))
 
- (define-type :table: (struct <llrb-symbol-table>))
+ (define-type |:table:| (struct <llrb-symbol-table>))
  (define-record-type <llrb-symbol-table>
    (%make-symbol-table root)
    table?
@@ -266,35 +266,35 @@
    (syntax-rules ()
      ((_ obj loc) (typecheckp obj table? loc))))
 
- (: make-table ( --> :table:))
+ (: make-table ( --> |:table:|))
  (define (make-table)
    (%make-symbol-table (empty-binding-set)))
 
- (: table-copy (:table: --> :table:))
+ (: table-copy (|:table:| --> |:table:|))
  (define (table-copy table)
    (check-table table 'symbol-table-copy)
    (%make-symbol-table (root table)))
 
- (: table-delete! (:table: symbol -> *))
+ (: table-delete! (|:table:| symbol -> *))
  (define (table-delete! table key)
    (check-table table 'symbol-table-delete!)
    (ensure symbol? key)
    (root-set! table (binding-node-delete (root table) (%symbol->string key))))
 
- (: table-set! (:table: symbol * -> *))
+ (: table-set! (|:table:| symbol * -> *))
  (define (table-set! table key value)
    (check-table table 'symbol-table-set!)
    (ensure symbol? key)
    (let ((key (%symbol->string key)))
      (root-set! table (%binding-set-insert (root table) key #f (%make-new-binding-node key value) #f))))
 
- (: table-ref/default (:table: symbol * --> *))
+ (: table-ref/default (|:table:| symbol * --> *))
  (define (table-ref/default table key default)
    (check-table table 'symbol-table-ref/default)
    (ensure symbol? key)
    (%binding-set-ref/default (root table) (%symbol->string key) default))
 
- (: table-ref (:table: symbol &optional (procedure () *) (procedure (*) *) -> *))
+ (: table-ref (|:table:| symbol &optional (procedure () *) (procedure (*) *) -> *))
  (define (table-ref table key . thunk+success)
    (check-table table 'symbol-table-ref)
    (ensure symbol? key)
@@ -305,7 +305,7 @@
 	  (error "symbol-table-ref unbound key" key)))
     (and (pair? thunk+success) (pair? (cdr thunk+success)) (cadr thunk+success))))
 
- (: table-update! (:table: symbol procedure &rest procedure -> *))
+ (: table-update! (|:table:| symbol procedure &rest procedure -> *))
  (define (table-update! table key update . default)
    (check-table table 'symbol-table-update!)
    (ensure symbol? key)
