@@ -1,5 +1,7 @@
 ;; -*-Scheme-*-
 
+(define llrb-tree-version "0.3.8")
+
 (define opt-flags '(-O3 -clustering -no-trace -no-lambda-info))
 
 (define so-flags '(-s -O3 -d2 -J))
@@ -40,24 +42,24 @@
  'llrb-fixnum-table
  '("llrb-fixnum-table.types"
    "llrb-fixnum-table.so" "llrb-fixnum-table.import.so")
- '((version "0.3.7")))
+ `((version ,llrb-tree-version)))
 (install-extension
  'llrb-string-table
  '("llrb-string-table.types"
    "llrb-string-table.so" "llrb-string-table.import.so")
- '((version "0.3.7")))
+ `((version ,llrb-tree-version)))
 (install-extension
  'llrb-symbol-tree
  '("llrb-symbol-tree.types"
    "llrb-symbol-tree.so" "llrb-symbol-tree.import.so")
- '((version "0.3.7")))
+ `((version ,llrb-tree-version)))
 (install-extension
  'llrb-generic-tree
  '("llrb-generic-tree.types"
    "llrb-generic-tree.so" "llrb-generic-tree.import.so")
- '((version "0.3.7")))
+ `((version ,llrb-tree-version)))
 (install-extension
  'llrb-tree
  '("llrb-tree.types"
    "llrb-tree.so" "llrb-tree.import.so")
- '((version "0.3.7")))
+ `((version ,llrb-tree-version)))
