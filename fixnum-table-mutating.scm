@@ -44,7 +44,7 @@
    (define-inline (llrb-node-value-set! n v) (##sys#setslot n 4 v))))
 
 
- (define-type :table: (struct <llrb-fixnum-table>))
+ (define-type |:table:| (struct <llrb-fixnum-table>))
  (define-record-type <llrb-fixnum-table>
    (%make-fixnum-table root)
    fixnum-table?
@@ -121,23 +121,23 @@
    llrb-node-color
    )
 
- (: make-fixnum-table (--> :table:))
+ (: make-fixnum-table (--> |:table:|))
 
  (define (make-fixnum-table)
    (%make-fixnum-table (llrb-node-init! (make-llrb-node #f #f #f  #f #f))))
 
- (: fixnum-table-empty? (:table: --> boolean))
+ (: fixnum-table-empty? (|:table:| --> boolean))
  (define (fixnum-table-empty? table)
    (ensure fixnum-table? table)
    (llrb-node-empty? (root table)))
 
- (: fixnum-table-delete! (:table: fixnum -> *))
+ (: fixnum-table-delete! (|:table:| fixnum -> *))
  (define (fixnum-table-delete! table key)
    (ensure fixnum? key)
    (ensure fixnum-table? table)
    (llrb-node-delete! (root table) key))
 
- (: fixnum-table-set! (:table: fixnum * -> boolean))
+ (: fixnum-table-set! (|:table:| fixnum * -> boolean))
  (define (fixnum-table-set! table key value)
    (ensure fixnum? key)
    (ensure fixnum-table? table)
@@ -148,7 +148,7 @@
    (llrb-node-node-insert! (root table) key #f (make-llrb-node #f #f #f key value) #f)
    #t)
 
- (: fixnum-table-update! (:table: fixnum procedure &rest procedure -> *))
+ (: fixnum-table-update! (|:table:| fixnum procedure &rest procedure -> *))
  (define (fixnum-table-update!1 table key update . default)
    (ensure fixnum? key)
    (ensure fixnum-table? table)
@@ -182,28 +182,28 @@
 	  (lambda () (error "fixnum-table-update! no default" default))))
      result))
 
- (: fixnum-table-ref/default (:table: fixnum * --> *))
+ (: fixnum-table-ref/default (|:table:| fixnum * --> *))
  (define (fixnum-table-ref/default table key default)
    (ensure fixnum? key)
    (ensure fixnum-table? table)
    (let ((node (llrb-node-node-lookup (root table) key)))
      (if node (llrb-node-value node) default)))
 
- (: fixnum-table-ref (:table: fixnum (procedure () *) -> *))
+ (: fixnum-table-ref (|:table:| fixnum (procedure () *) -> *))
  (define (fixnum-table-ref table key default)
    (ensure fixnum? key)
    (ensure fixnum-table? table)
    (let ((node (llrb-node-node-lookup (root table) key)))
      (if node (llrb-node-value node) (default))))
 
- (: fixnum-table-fold ((procedure (fixnum * *) *) * :table: -> *))
+ (: fixnum-table-fold ((procedure (fixnum * *) *) * |:table:| -> *))
  (define (fixnum-table-fold proc init table)
    (ensure fixnum-table? table)
    (llrb-node-node-fold
     (lambda (node init) (proc (llrb-node-key node) (llrb-node-value node) init))
     init (root table)))
 
- (: fixnum-table-for-each ((procedure (fixnum *) *) :table: -> *))
+ (: fixnum-table-for-each ((procedure (fixnum *) *) |:table:| -> *))
  (define (fixnum-table-for-each proc table)
    (ensure fixnum-table? table)
    (llrb-node-node-for-each
@@ -211,13 +211,13 @@
     (root table))
    #f)
 
- (: fixnum-table/min (:table: (procedure () * *) --> * *))
+ (: fixnum-table/min (|:table:| (procedure () * *) --> * *))
  (define (fixnum-table/min table default)
    (ensure fixnum-table? table)
    (let ((node (llrb-node-min (root table))))
      (if node (values (llrb-node-key node) (llrb-node-value node)) (default))))
 
- (: fixnum-table/delete-min! (:table: (procedure () fixnum *) -> * *))
+ (: fixnum-table/delete-min! (|:table:| (procedure () fixnum *) -> * *))
  (define (fixnum-table/delete-min! table default)
    (ensure fixnum-table? table)
    (let ((node (llrb-node-node-delete-min! (root table))))

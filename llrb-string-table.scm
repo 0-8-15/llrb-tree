@@ -246,7 +246,7 @@
 	  (make-binding-node #f #f #f (binding-node-key n) v))))
     (lambda () (%make-new-binding-node k (dflt)))))
 
- ;; srfi-1::alist-cons compatible
+ ;; srfi-1|::|alist-cons compatible
  (: binding-set-cons (string * (struct <string-binding-node>) --> (struct <string-binding-node>)))
  (define (binding-set-cons k v nodeset) ; export
    (binding-set-insert nodeset k v))
@@ -267,7 +267,7 @@
     (lambda (node init) (binding-node-insert init (binding-node-key node) #f node #f))
     outer inner))
 
- (define-type :table: (struct <llrb-string-table>))
+ (define-type |:table:| (struct <llrb-string-table>))
  (define-record-type <llrb-string-table>
    (%make-string-table root)
    table?
@@ -280,32 +280,32 @@
  (define (make-table)
    (%make-string-table (empty-binding-set)))
 
- (: table-copy (:table: --> :table:))
+ (: table-copy (|:table:| --> |:table:|))
  (define (table-copy table)
    (check-table table 'string-table-copy)
    (%make-string-table (root table)))
 
- (: table-empty? (:table: --> boolean))
+ (: table-empty? (|:table:| --> boolean))
  (define (table-empty? table)
    (check-table table 'string-table-empty?)
    (binding-node-empty? (root table)))
 
- (: table-delete! (:table: string -> *))
+ (: table-delete! (|:table:| string -> *))
  (define (table-delete! table key)
    (check-table table 'string-table-delete!)
    (root-set! table (binding-node-delete (root table) key)))
 
- (: table-set! (:table: string * -> *))
+ (: table-set! (|:table:| string * -> *))
  (define (table-set! table key value)
    (check-table table 'string-table-set!)
    (root-set! table (binding-node-insert (root table) key #f (%make-new-binding-node key value) #f)))
  
- (: table-ref/default (:table: string * --> *))
+ (: table-ref/default (|:table:| string * --> *))
  (define (table-ref/default table key default)
    (check-table table 'string-table-ref/default)
    (%binding-set-ref/default (root table) key default))
 
- (: table-ref (:table: string &optional (procedure () *) (procedure (*) *) -> *))
+ (: table-ref (|:table:| string &optional (procedure () *) (procedure (*) *) -> *))
  (define (table-ref table key . thunk+success)
    (check-table table 'string-table-ref)
    (%binding-set-ref/thunk
@@ -315,7 +315,7 @@
 	  (error "string-table-ref unbound key" key)))
     (and (pair? thunk+success) (pair? (cdr thunk+success)) (cadr thunk+success))))
 
- (: table-update! (:table: string (or false procedure) &rest procedure -> *))
+ (: table-update! (|:table:| string (or false procedure) &rest procedure -> *))
  (define (table-update! table key update . default)
    (check-table table 'string-table-update!)
    (or (eq? update #f) (ensure procedure? update))
@@ -341,7 +341,7 @@
 	     result)
 	   (loop #f (root table))))))
 
- (: table-fold (:table: (procedure (string * :table:) *) * -> *))
+ (: table-fold (|:table:| (procedure (string * |:table:|) *) * -> *))
  (define (table-fold table proc init)
    (check-table table 'string-table-fold)
    (ensure procedure? proc)
@@ -349,7 +349,7 @@
     (lambda (node init) (proc (binding-node-key node) (binding-node-value node) init))
     init (root table)))
 
- (: table-for-each (:table: (procedure (string *) *) -> *))
+ (: table-for-each (|:table:| (procedure (string *) *) -> *))
  (define (table-for-each table proc)
    (check-table table 'string-table-for-each)
    (ensure procedure? proc)
@@ -358,7 +358,7 @@
     (root table))
    #f)
 
- (: table-min (:table: (procedure () * *) --> * *))
+ (: table-min (|:table:| (procedure () * *) --> * *))
  (define (table-min table default)
    (check-table table 'string-table-min)
    (let ((node (binding-node-min (root table))))
@@ -367,7 +367,7 @@
 	   (ensure procedure? default)
 	   (default)))))
 
- (: table-delete-min! (:table: -> * *))
+ (: table-delete-min! (|:table:| -> * *))
  (define (table-delete-min! table)
    (binding-node-delete-min
     (root table)
